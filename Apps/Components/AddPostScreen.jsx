@@ -1,15 +1,19 @@
-import { View, Text, TextInput, TouchableOpacity, Keyboard, Image, ScrollView } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Keyboard, Image, ScrollView, Alert, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { app } from '../../firebaseConfig';
-import { getFirestore, getDocs, collection } from "firebase/firestore";
+import { getFirestore, getDocs, collection, addDoc } from "firebase/firestore";
 import { Formik } from 'formik';
 import {Picker} from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { useUser } from '@clerk/clerk-expo';
 
 export default function AddPostScreen() {
   const [image, setImage] = useState(null);
-
   const db = getFirestore(app);
+  const storage = getStorage();
+  const [loading, setLoading] = useState(false);
+  const {user} = useUser();
   const [categoryList, setCategoryList] = useState([]);
 
   useEffect(() => {
@@ -33,17 +37,33 @@ export default function AddPostScreen() {
       aspect: [4, 4],
       quality: 1,
     });
-
     console.log(result);
-
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
   };
 
-  const onSubmitMethod = (value) => {
-    value.image = image;
-    console.log(value)
+  const onSubmitMethod = async(value) => {
+    setLoading(true);
+    const resp = await fetch(image);
+    const blob = await resp.blob();
+    const storageRef = ref(storage, 'userPost/'+Date.now()+".jpg");
+    uploadBytes(storageRef, blob).then((snapshot) => {
+      console.log('Uploaded a blob or file!');
+    }).then((then)=>{
+      getDownloadURL(storageRef).then(async(downloadUrl)=>{
+        console.log(downloadUrl);
+        value.image=downloadUrl;
+        value.userName=user.fullName;
+        value.userEmail=user.primaryEmailAddress.emailAddress;
+        value.userImage=user.imageUrl;
+        const docRef = await addDoc(collection(db, "UserPost"),value)
+        if(docRef.id){
+          setLoading(false);
+          Alert.alert("Success","Post added successfully");
+        }
+      })
+    });
   }
 
   return (
@@ -52,25 +72,21 @@ export default function AddPostScreen() {
         <Text className="text-2xl font-bold mt-8 text-gray-800">New Product</Text>
         <Text className="mt-1 mb-2 text-sm leading-6 text-gray-600">This information will be displayed publicly.</Text>
         <Formik
-          initialValues={{name:'', desc:'', category:'', price:'' }}
+          initialValues={{name:'', desc:'', category:'', price:'', userName:'', userEmail:'', userImage:'' }}
           onSubmit={value=>onSubmitMethod(value)}
           validate={(values) => {
             const errors = {}
             if (!values.name)
             {
-              console.log("Name is required");
               errors.name = 'Name is required';
             }
-            if (!values.image) {
-              console.log("Image is required");
-              errors.image = 'Image is required';
-            }
             if (!values.desc) {
-              console.log("Description is required");
               errors.desc = 'Description is required';
             }
+            if (!values.price) {
+              errors.price = 'Price is required';
+            }
             if (!values.category) {
-              console.log("Category is required");
               errors.category = 'Category is required';
             }
             return errors
@@ -116,8 +132,11 @@ export default function AddPostScreen() {
                     value={item.name} />
                 ))}
               </Picker>
-              <TouchableOpacity onPress={handleSubmit} className="bg-marcha p-4 mt-3 rounded-md">
-                <Text className="text-white text-center text-base font-bold">Submit</Text>
+              <TouchableOpacity onPress={handleSubmit} className="p-4 mt-3 rounded-md" style={{backgroundColor:loading?'#9C1E07':'#f65e44'}} disabled={loading}>
+                { loading?
+                  <ActivityIndicator color="#fff"/>
+                  : <Text className="text-white text-center text-base font-bold">Submit</Text>
+                }
               </TouchableOpacity>
             </View>
           )}
