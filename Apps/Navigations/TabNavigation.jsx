@@ -1,11 +1,11 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import ExploreScreen from '../Components/ExploreScreen';
-import CommunitiesScreen from '../Components/CommunitiesScreen';
-import AddPostScreen from '../Components/AddPostScreen';
-import ProfileScreen from '../Components/ProfileScreen';
-import InboxScreen from '../Components/InboxScreen';
+import ExploreScreen from './../Screens/ExploreScreen';
+import CommunitiesScreen from './../Screens/CommunitiesScreen';
+import AddPostScreen from './../Screens/AddPostScreen';
+import ProfileScreen from './../Screens/ProfileScreen';
+import InboxScreen from './../Screens/InboxScreen';
 import { Feather } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();

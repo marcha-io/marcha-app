@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import LoginScreen from './Apps/Components/LoginScreen';
+import LoginScreen from './Apps/Screens/LoginScreen';
 import { ClerkProvider, SignedIn, SignedOut } from '@clerk/clerk-expo';
 import { NavigationContainer } from '@react-navigation/native';
 import TabNavigation from './Apps/Navigations/TabNavigation';
