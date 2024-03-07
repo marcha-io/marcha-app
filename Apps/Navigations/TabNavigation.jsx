@@ -13,31 +13,31 @@ const Tab = createBottomTabNavigator();
 export default function TabNavigation() {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false, tabBarActiveTintColor: '#f65e44'}}>
-      <Tab.Screen name="explore" component={ExploreScreen} options={{
+      <Tab.Screen name="Explore" component={ExploreScreen} options={{
         tabBarLabel:({color})=>(
           <Text className="font-medium" style={{color:color,fontSize:12}}>Explore</Text>),
         tabBarIcon:({color,size})=>(
           <Feather name="search" size={size} color={color} />)
       }}/>
-      <Tab.Screen name="communities" component={CommunitiesScreen} options={{
+      <Tab.Screen name="Communities" component={CommunitiesScreen} options={{
         tabBarLabel:({color})=>(
           <Text className="font-medium" style={{color:color,fontSize:12}}>Communities</Text>),
         tabBarIcon:({color,size})=>(
           <Feather name="home" size={size} color={color} />)
       }}/>
-      <Tab.Screen name="addPost" component={AddPostScreen} options={{
+      <Tab.Screen name="AddPost" component={AddPostScreen} options={{
         tabBarLabel:({color})=>(
           <Text className="font-medium" style={{color:color,fontSize:12}}>Upload</Text>),
         tabBarIcon:({color,size})=>(
           <Feather name="plus-circle" size={size} color={color} />)
       }}/>
-      <Tab.Screen name="inbox" component={InboxScreen} options={{
+      <Tab.Screen name="Inbox" component={InboxScreen} options={{
         tabBarLabel:({color})=>(
           <Text className="font-medium" style={{color:color,fontSize:12}}>Inbox</Text>),
         tabBarIcon:({color,size})=>(
           <Feather name="inbox" size={size} color={color} />)
       }}/>
-      <Tab.Screen name="profile" component={ProfileScreen} options={{
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{
         tabBarLabel:({color})=>(
           <Text className="font-medium" style={{color:color,fontSize:12}}>Profile</Text>),
         tabBarIcon:({color,size})=>(
