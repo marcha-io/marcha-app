@@ -16,7 +16,7 @@ export default function Header() {
           <Text className="text-gray-800 text-lg font-semibold">{ user.fullName }</Text>
         </View>
       </View>
-      <View className="bg-gray-100 flex flex-row items-center space-x-2 rounded-lg h-12 px-5 mt-4">
+      <View className="bg-stone-100 border border-stone-200 flex flex-row items-center space-x-2 rounded-lg h-12 px-5 mt-4">
         <Feather name="search" size={16} color="grey" />
         <TextInput placeholder="Search"
         className="text-base w-full mb-1"

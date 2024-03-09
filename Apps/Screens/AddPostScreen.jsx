@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Keyboard, Image, ScrollView, Alert, ActivityIndicator } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Keyboard, Image, ScrollView, Alert, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { app } from '../../firebaseConfig';
 import { getFirestore, getDocs, collection, addDoc } from "firebase/firestore";
@@ -67,85 +67,87 @@ export default function AddPostScreen() {
   }
 
   return (
-    <ScrollView onPress={Keyboard.dismiss} accessible={false}>
-      <View className="">
-        <View className="bg-white px-10 pt-10 pb-5">
-          <Text className="text-2xl font-bold mt-8 text-gray-800">New Product</Text>
-          <Text className="mt-1 mb-2 text-sm leading-6 text-gray-600">This information will be displayed publicly.</Text>
-        </View>
-        <View className="py-5 px-10">
-          <Formik
-            initialValues={{name:'', desc:'', category:'', price:'', userName:'', userEmail:'', userImage:'' }}
-            onSubmit={value=>onSubmitMethod(value)}
-            validate={(values) => {
-              const errors = {}
-              if (!values.name)
-              {
-                errors.name = 'Name is required';
-              }
-              if (!values.desc) {
-                errors.desc = 'Description is required';
-              }
-              if (!values.price) {
-                errors.price = 'Price is required';
-              }
-              if (!values.category) {
-                errors.category = 'Category is required';
-              }
-              return errors
-              }}>
-            {({handleChange, handleBlur, handleSubmit, values, errors})=>(
-              <View>
-                <TouchableOpacity onPress={pickImage}>
-                  {image?
-                    <Image source={{uri:image}} className="mt-3 h-44 w-44 rounded-md border border-gray-400"/>
-                    : <Image source={require('./../../assets/images/placeholder.jpeg')} className="mt-3 h-44 w-44 rounded-md border border-gray-400"/>
-                  }
-                </TouchableOpacity>
-                <TextInput
-                  className="mt-3 border border-gray-300 rounded-md h-12 px-4 bg-gray-200 text-gray-600 text-sm"
-                  placeholder="Name"
-                  values={values.name}
-                  onChangeText={handleChange('name')}
-                />
-                <TextInput
-                  className="mt-3 border border-gray-300 h-28 rounded-md py-3 px-4 bg-gray-200 text-gray-600 text-sm"
-                  placeholder="Description"
-                  multiline={true}
-                  values={values.desc}
-                  onChangeText={handleChange('desc')}
-                />
-                <TextInput
-                  className="mt-3 border border-gray-300 rounded-md h-12 px-4 bg-gray-200 text-gray-600 text-sm"
-                  placeholder="Price"
-                  values={values.price}
-                  keyboardType='numeric'
-                  onChangeText={handleChange('price')}
-                />
-                <Picker
-                  selectedValue={values.category}
-                  onValueChange={handleChange('category')}
-                  itemStyle={{ borderColor: "#d1d5db", backgroundColor:"#e5e7eb", borderWidth: 1, marginTop:12, borderRadius:6}}
+    <KeyboardAvoidingView>
+      <ScrollView onPress={Keyboard.dismiss} accessible={false}>
+        <View className="">
+          <View className="bg-white px-10 pt-10 pb-5">
+            <Text className="text-2xl font-bold mt-8 text-gray-800">New Product</Text>
+            <Text className="mt-1 mb-2 text-sm leading-6 text-gray-600">This information will be displayed publicly.</Text>
+          </View>
+          <View className="py-5 px-10">
+            <Formik
+              initialValues={{name:'', desc:'', category:'', price:'', userName:'', userEmail:'', userImage:'', createdAt:Date.now() }}
+              onSubmit={value=>onSubmitMethod(value)}
+              validate={(values) => {
+                const errors = {}
+                if (!values.name)
+                {
+                  errors.name = 'Name is required';
+                }
+                if (!values.desc) {
+                  errors.desc = 'Description is required';
+                }
+                if (!values.price) {
+                  errors.price = 'Price is required';
+                }
+                if (!values.category) {
+                  errors.category = 'Category is required';
+                }
+                return errors
+                }}>
+              {({handleChange, handleBlur, handleSubmit, values, errors})=>(
+                <View>
+                  <TouchableOpacity onPress={pickImage}>
+                    {image?
+                      <Image source={{uri:image}} className="mt-3 h-44 w-44 rounded-md border border-gray-400"/>
+                      : <Image source={require('./../../assets/images/placeholder.jpeg')} className="mt-3 h-44 w-44 rounded-md border border-gray-400"/>
+                    }
+                  </TouchableOpacity>
+                  <TextInput
+                    className="mt-3 border border-gray-300 rounded-md h-12 px-4 bg-gray-200 text-gray-600 text-sm"
+                    placeholder="Name"
+                    values={values.name}
+                    onChangeText={handleChange('name')}
+                  />
+                  <TextInput
+                    className="mt-3 border border-gray-300 h-28 rounded-md py-3 px-4 bg-gray-200 text-gray-600 text-sm"
+                    placeholder="Description"
+                    multiline={true}
+                    values={values.desc}
+                    onChangeText={handleChange('desc')}
+                  />
+                  <TextInput
+                    className="mt-3 border border-gray-300 rounded-md h-12 px-4 bg-gray-200 text-gray-600 text-sm"
+                    placeholder="Price"
+                    values={values.price}
+                    keyboardType='numeric'
+                    onChangeText={handleChange('price')}
+                  />
+                  <Picker
+                    selectedValue={values.category}
+                    onValueChange={handleChange('category')}
+                    itemStyle={{ borderColor: "#d1d5db", backgroundColor:"#e5e7eb", borderWidth: 1, marginTop:12, borderRadius:6}}
 
-                >
-                  {categoryList&&categoryList.map((item,index)=>(
-                    <Picker.Item
-                      key={index}
-                      label={item.name}
-                      value={item.name} />
-                  ))}
-                </Picker>
-                <TouchableOpacity onPress={handleSubmit} className="p-4 mt-3 rounded-md" style={{backgroundColor:loading?'#9C1E07':'#f65e44'}} disabled={loading}>
-                  { loading?
-                    <ActivityIndicator color="#fff"/>
-                    : <Text className="text-white text-center text-base font-bold">Submit</Text>
-                  }
-                </TouchableOpacity>
-              </View>
-            )}
-          </Formik>
+                  >
+                    {categoryList&&categoryList.map((item,index)=>(
+                      <Picker.Item
+                        key={index}
+                        label={item.name}
+                        value={item.name} />
+                    ))}
+                  </Picker>
+                  <TouchableOpacity onPress={handleSubmit} className="p-4 mt-3 rounded-md" style={{backgroundColor:loading?'#9C1E07':'#f65e44'}} disabled={loading}>
+                    { loading?
+                      <ActivityIndicator color="#fff"/>
+                      : <Text className="text-white text-center text-base font-bold">Submit</Text>
+                    }
+                  </TouchableOpacity>
+                </View>
+              )}
+            </Formik>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   )
 }

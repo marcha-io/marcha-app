@@ -1,19 +1,22 @@
-import { View, Text } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Header from './../Components/Explore/Header'
 import Slider from '../Components/Explore/Slider'
-import { getFirestore } from 'firebase/firestore'
+import { collection, getDocs, getFirestore, orderBy } from 'firebase/firestore'
 import { app } from '../../firebaseConfig'
 import Categories from '../Components/Explore/Categories'
+import LatestItems from '../Components/Explore/LatestItems'
 
 export default function ExploreScreen() {
   const db = getFirestore(app);
   // const getSliders=()=>{
   // }
   const [categoryList, setCategoryList] = useState([]);
+  const [latestItemList, setLatestItemList] = useState([]);
 
   useEffect(() => {
-    setCategoryList();
+    getCategoryList();
+    getLatestItems();
   },[])
 
   const getCategoryList = async() => {
@@ -24,8 +27,16 @@ export default function ExploreScreen() {
       setCategoryList(categoryList=>[...categoryList,doc.data()])
     })
   }
+
+  const getLatestItems = async() => {
+    setLatestItemList([]);
+    const querySnapshot=await getDocs(collection(db, 'UserPost'), orderBy('createdAt', 'desc'));
+    querySnapshot.forEach((doc)=>{
+      setLatestItemList(latestItemList=>[...latestItemList,doc.data()]);
+    })
+  }
   return (
-    <View>
+    <ScrollView>
       <View className="bg-white pt-14 pb-8 px-6">
         <Header/>
       </View>
@@ -33,6 +44,7 @@ export default function ExploreScreen() {
         <Slider/>
       </View> */}
       <Categories categoryList={categoryList}/>
-    </View>
+      <LatestItems latestItemList={latestItemList} heading={'Recently Uploaded'}/>
+    </ScrollView>
   )
 }
